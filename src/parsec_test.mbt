@@ -283,6 +283,28 @@ test "delay supports recursive grammars" {
 }
 
 ///|
+test "position observes the current offset without consuming input" {
+  let parser = Parser::token('a', expected="a").then_right(Parser::position())
+  match parser.parse_all(['a']) {
+    Ok(offset) => inspect(offset, content="1")
+    Err(_) => fail("expected the position parser to succeed")
+  }
+}
+
+///|
+test "bounded repetition collects large inputs iteratively" {
+  let input = []
+  for _ in 0..<4096 {
+    input.push('a')
+  }
+  let parser = Parser::token('a', expected="a").repeat_0_to_n(4096)
+  match parser.parse_all(input) {
+    Ok(values) => inspect(values.length(), content="4096")
+    Err(_) => fail("expected the bounded parser to collect every token")
+  }
+}
+
+///|
 test "sequence and lift2 preserve ordered values" {
   let sequence = Parser::sequence([
     Parser::token('a', expected="a"),

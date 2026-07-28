@@ -1,0 +1,51 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Nanaloveyuki/parsec/json"
+
+import {
+  "Nanaloveyuki/parsec",
+  "Nanaloveyuki/parsec/lexer",
+}
+
+// Values
+pub fn parse(String) -> Result[Json, JsonError]
+
+pub fn parse_with_limits(String, JsonLimits) -> Result[Json, JsonError]
+
+// Errors
+
+// Types and methods
+pub(all) enum Json {
+  Null
+  Bool(value~ : Bool)
+  Number(raw~ : String)
+  Text(value~ : String)
+  Array(items~ : Array[Json])
+  Object(members~ : Array[(String, Json)])
+}
+
+pub(all) enum JsonError {
+  Syntax(error~ : @parsec.ParseError)
+  DuplicateKey(key~ : String, first_offset~ : Int, duplicate_offset~ : Int)
+  Limit(kind~ : JsonLimitKind, offset~ : Int, limit~ : Int)
+}
+pub fn JsonError::offset(Self) -> Int
+pub fn JsonError::position(Self, @lexer.Source) -> @lexer.Position?
+
+pub(all) enum JsonLimitKind {
+  InputChars
+  NestingDepth
+  StringChars
+  ArrayItems
+  ObjectMembers
+}
+
+pub struct JsonLimits {
+  // private fields
+}
+pub fn JsonLimits::new(max_input_chars~ : Int, max_depth~ : Int, max_string_chars~ : Int, max_array_items~ : Int, max_object_members~ : Int) -> Self
+pub fn JsonLimits::standard() -> Self
+
+// Type aliases
+
+// Traits
+

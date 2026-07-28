@@ -28,6 +28,7 @@ match digit.parse_all(['7']) {
 | `satisfy(label, predicate)` | Consumes one token only when `predicate` accepts it. |
 | `token(value, expected=...)` | Matches an equality-comparable token. |
 | `eof()` | Succeeds only at end of input. |
+| `position()` | Returns the current offset without consuming input. |
 | `map(f)` | Transforms a successful result. |
 | `flat_map(f)` | Chooses the next parser from the previous result. |
 | `then(next)` | Sequences two parsers and keeps both results as a pair. |
@@ -171,8 +172,9 @@ expression.set(
 )
 ```
 
-Keep protocol grammars in their owning packages. `parsec` supplies the parsing
-mechanics; it intentionally does not define URI, JSON, CSV, or lexer policies.
+Keep protocol grammars in their owning packages. The root `parsec` package
+supplies parsing mechanics; protocol and format packages define their own
+syntax and policies.
 
 ## Feature Packages
 
@@ -253,3 +255,27 @@ match parser.parse(['a', 'c']) {
 `Located[T]` pairs a token or AST-adjacent value with such a span. Recovery,
 trivia ownership, CST construction, and AST lowering intentionally remain
 outside this package.
+
+### Strict JSON
+
+`Nanaloveyuki/parsec/json` is a strict RFC 8259 parser for configuration and
+other bounded documents. It accepts only JSON whitespace, preserves number
+source text, rejects duplicate object keys, validates Unicode surrogate pairs,
+and accepts `JsonLimits` for input and nesting limits.
+
+```mbt nocheck
+import {
+  "Nanaloveyuki/parsec/json" @json,
+}
+
+match @json.parse("{\"enabled\":true,\"retries\":3}") {
+  Ok(@json.Object(members~)) => println(members.length())
+  Err(error) => println("parse failed at \{error.offset()}")
+  _ => ()
+}
+```
+
+This package deliberately does not depend on JSON5, JSON-RPC, JSONPath, or
+JSONL packages. JSON5 is a different, permissive syntax; JSON-RPC and JSONL
+are protocol or framing layers; JSONPath queries a parsed tree. Applications
+may use them alongside `parsec/json` through explicit adapters.

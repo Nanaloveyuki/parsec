@@ -26,6 +26,8 @@ abstraction.
   `context`.
 - Use optional feature packages for character-oriented factories and persistent
   pull-stream input without changing the root parser's array state.
+- Parse strict RFC 8259 documents with duplicate-key detection and resource
+  limits through the optional `json` package.
 
 ## Install
 
@@ -49,6 +51,7 @@ import {
   "Nanaloveyuki/parsec/char" @char,
   "Nanaloveyuki/parsec/lazy" @lazy,
   "Nanaloveyuki/parsec/lexer" @lexer,
+  "Nanaloveyuki/parsec/json" @json,
 }
 ```
 
@@ -58,6 +61,8 @@ import {
   streams. Its parsers cannot be mixed with root parsers.
 - `@lexer` maps character offsets to source positions and spans for tokenizers
   and parse diagnostics. It does not own parser state.
+- `@json` is a strict JSON parser built from the root package and lexer. It is
+  independent from JSON5, JSON-RPC, JSONPath, and JSONL libraries.
 
 ## Use
 

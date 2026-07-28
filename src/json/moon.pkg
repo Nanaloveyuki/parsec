@@ -1,0 +1,5 @@
+import {
+  "Nanaloveyuki/parsec",
+  "Nanaloveyuki/parsec/lexer",
+  "moonbitlang/core/hashmap",
+}
