@@ -11,8 +11,11 @@ The key behavioral rules are part of the public contract:
 
 - `parse_all` must reject trailing input.
 - `or_else` may backtrack only when the first branch consumed nothing.
+- `attempt` can restore consumption but cannot revoke a `cut` commitment.
 - `many` must reject a successful child parser that consumed nothing.
 - `ParseError` offsets are token offsets.
+- Retryable alternatives retain the furthest failure; same-offset expectations
+  are merged as `ExpectedAny`.
 
 ## Local Setup
 

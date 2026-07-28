@@ -27,9 +27,8 @@ test "parse a delimited token" {
 ## Composition
 
 `map` transforms a successful value. `flat_map` makes the next parser depend
-on that value. `and_then` remains available as a compatibility spelling.
-`or_else` retries its fallback only when the first parser failed without
-consuming input; this prevents silently discarding a committed prefix.
+on that value. `or_else` retries its fallback only when the first parser failed
+without consuming input; this prevents silently discarding a committed prefix.
 
-`many` and `some` collect repetitions. A parser that succeeds without
+`many` and `many1` collect repetitions. A parser that succeeds without
 consuming input is rejected by `many`, preventing an infinite loop.
