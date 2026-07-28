@@ -5,7 +5,6 @@ pub(all) enum ParseError {
   ExpectedAny(labels~ : Array[String], offset~ : Int)
   EmptyMatchInMany(offset~ : Int)
   EmptyChoice(offset~ : Int)
-  UnboundReference(offset~ : Int)
   NotFollowedBy(label~ : String, offset~ : Int)
   Context(label~ : String, cause~ : ParseError)
 }
@@ -18,7 +17,6 @@ pub fn ParseError::offset(self : ParseError) -> Int {
     ExpectedAny(offset~, ..) => offset
     EmptyMatchInMany(offset~) => offset
     EmptyChoice(offset~) => offset
-    UnboundReference(offset~) => offset
     NotFollowedBy(offset~, ..) => offset
     Context(cause~, ..) => cause.offset()
   }
@@ -74,14 +72,54 @@ fn ParseError::furthest(self : ParseError, other : ParseError) -> ParseError {
 }
 
 ///|
+pub struct Stream[T] {
+  priv step : () -> (T, Stream[T])?
+}
+
+///|
+pub fn[T] Stream::from_fn(step : () -> (T, Stream[T])?) -> Stream[T] {
+  { step, }
+}
+
+///|
+pub fn[T] Stream::empty() -> Stream[T] {
+  Stream::from_fn(() => None)
+}
+
+///|
+fn[T] Stream::from_array_at(input : Array[T], offset : Int) -> Stream[T] {
+  Stream::from_fn(() => {
+    match input.get(offset) {
+      Some(value) => Some((value, Stream::from_array_at(input, offset + 1)))
+      None => None
+    }
+  })
+}
+
+///|
+pub fn[T] Stream::from_array(input : Array[T]) -> Stream[T] {
+  Stream::from_array_at(input, 0)
+}
+
+///|
+pub fn Stream::from_string(input : String) -> Stream[Char] {
+  Stream::from_array(input.to_array())
+}
+
+///|
+pub fn[T] Stream::next(self : Stream[T]) -> (T, Stream[T])? {
+  (self.step)()
+}
+
+///|
 pub struct State[T] {
-  priv input : Array[T]
+  priv stream : Stream[T]
   priv offset : Int
 }
 
 ///|
-pub fn[T] State::new(input : Array[T]) -> State[T] {
-  { input, offset: 0 }
+pub fn[T] State::new(stream : Stream[T]) -> State[T] {
+  { stream, offset: 0 }
 }
 
 ///|
@@ -90,14 +128,9 @@ pub fn[T] State::offset(self : State[T]) -> Int {
 }
 
 ///|
-pub fn[T] State::is_at_end(self : State[T]) -> Bool {
-  self.offset == self.input.length()
-}
-
-///|
 fn[T] State::next(self : State[T]) -> (T, State[T])? {
-  match self.input.get(self.offset) {
-    Some(token) => Some((token, { input: self.input, offset: self.offset + 1 }))
+  match self.stream.next() {
+    Some((token, stream)) => Some((token, { stream, offset: self.offset + 1 }))
     None => None
   }
 }

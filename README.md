@@ -15,12 +15,17 @@ abstraction.
 - Compose parsers with `map`, `flat_map`, `then`, `then_left`, and `then_right`.
 - Match tokens with `item`, `satisfy`, and equality-based `token`.
 - Build alternatives with `or_else`, `choice`, `attempt`, and `cut`.
-- Repeat parsers with `optional`, `many`, `many1`, and `sep_by` without
-  zero-consumption infinite loops.
+- Repeat parsers with `optional`, `option`, `many`, `many1`, `count`,
+  `repeat_0_to_n`, `sep_by`, and `sep_by1` without zero-consumption infinite
+  loops.
+- Compose homogeneous and heterogeneous sequences with `sequence`, `lift2`,
+  and `apply`; use `ParserRef` for staged recursive grammars.
 - Build delimited, recursive, and lookahead grammars with `between`, `delay`,
   `look_ahead`, and `not_followed_by`.
 - Add user-facing expectations with `label` and nested grammar context with
   `context`.
+- Use optional feature packages for character-oriented factories and persistent
+  pull-stream input without changing the root parser's array state.
 
 ## Install
 
@@ -35,6 +40,24 @@ import {
   "Nanaloveyuki/parsec",
 }
 ```
+
+Optional packages have separate imports and parser state:
+
+```mbt nocheck
+import {
+  "Nanaloveyuki/parsec" @parsec,
+  "Nanaloveyuki/parsec/char" @char,
+  "Nanaloveyuki/parsec/lazy" @lazy,
+  "Nanaloveyuki/parsec/lexer" @lexer,
+}
+```
+
+- `@char` creates character parsers for the root package's `Array[Char]`
+  input model.
+- `@lazy` provides an independent `Stream[T]` parser for persistent pull
+  streams. Its parsers cannot be mixed with root parsers.
+- `@lexer` maps character offsets to source positions and spans for tokenizers
+  and parse diagnostics. It does not own parser state.
 
 ## Use
 
@@ -57,7 +80,7 @@ match parser.parse_all(['(', 'x', ')']) {
 This makes a consumed prefix a commitment rather than silently discarding it.
 
 See [the usage guide](docs/usage.md) for grammar composition, error handling,
-and recursive parsers.
+recursive parsers, and feature-package boundaries.
 
 ## Documentation
 

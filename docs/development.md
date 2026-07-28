@@ -3,9 +3,9 @@
 ## Scope
 
 `parsec` is a general token parser library. Keep protocol grammars, text
-decoding, source-location policy, and lexer definitions in consumer packages.
-The public package is `Nanaloveyuki/parsec`; all user-facing parser types and
-combinators belong under `src/`.
+decoding, grammar-specific recovery, token trivia policy, and AST/CST lowering
+in consumer packages. The root package is `Nanaloveyuki/parsec`; optional
+packages extend it without sharing incompatible parser state.
 
 The key behavioral rules are part of the public contract:
 
@@ -41,10 +41,19 @@ src/
   lookahead.mbt      Positive and negative lookahead
   *_test.mbt         Behavior tests
   README.mbt.md      Package documentation and checked examples
+  char/              Character parser factories over root Array[Char] parsers
+  lazy/              Independent persistent pull-stream parser implementation
+  lexer/             Source positions, spans, and located lexical values
 ```
 
-MoonBit packages are directory-based. Files inside `src/` are one package;
-split files by responsibility, not by an assumed namespace.
+MoonBit packages are directory-based. Files directly inside `src/` form the
+root package; each subdirectory with `moon.pkg` is a separate package. Split
+files by responsibility, not by an assumed namespace.
+
+`char` returns root parsers and therefore shares the root `Array[T]` input
+model. `lazy` owns separate `Stream[T]`, `State[T]`, and `Parser[T, A]` types;
+do not make either package depend on the other's private state. `lexer` owns
+only source-location values and may depend on the public root `ParseError` API.
 
 `Reply[T, A]` is package-private. It records consumed and committed state so
 `attempt`, `cut`, `or_else`, and repetition can make correct control-flow
