@@ -27,16 +27,15 @@ match digit.parse_all(['7']) {
 | `item()` | Consumes one token. |
 | `satisfy(label, predicate)` | Consumes one token only when `predicate` accepts it. |
 | `token(value, expected=...)` | Matches an equality-comparable token. |
-| `end()` | Succeeds only at end of input. |
+| `eof()` | Succeeds only at end of input. |
 | `map(f)` | Transforms a successful result. |
 | `flat_map(f)` | Chooses the next parser from the previous result. |
-| `and_then(f)` | Compatibility spelling of `flat_map`. |
 | `then(next)` | Sequences two parsers and keeps both results as a pair. |
 | `then_right(next)` | Sequences two parsers and keeps the right result. |
 | `then_left(next)` | Sequences two parsers and keeps the left result. |
 | `replace(value)` / `ignore()` | Replaces a parsed value or discards it as `Unit`. |
 | `optional()` | Produces `Some(value)` or `None`. |
-| `many()` / `some()` / `many1()` | Collects zero-or-more / one-or-more values. |
+| `many()` / `many1()` | Collects zero-or-more / one-or-more values. |
 | `sep_by(separator)` | Parses zero-or-more values separated by `separator`. |
 | `between(open, parser, close)` | Parses a delimited value. |
 | `delay(factory)` | Delays parser construction for recursive grammars. |
@@ -64,8 +63,9 @@ let parser = pair.or_else(@parsec.Parser::token('a', expected="a"))
 ```
 
 Use `attempt()` when a branch intentionally needs to restore its input and let
-the next alternative run after a consumed failure. Use `Parser::cut()` in a
-sequence to commit even when the parser has not consumed a token yet:
+the next alternative run after a consumed failure. `Parser::cut()` is a hard
+commit: `attempt()` does not revoke it. Use a cut in a sequence to commit even
+when the parser has not consumed a token yet:
 
 ```mbt nocheck
 let pair = @parsec.Parser::token('a', expected="a").then_right(
@@ -93,6 +93,7 @@ repetition, or use a parser that consumes at least one token on success.
 
 - `UnexpectedEnd` means a parser needed another token.
 - `Expected` records a caller-supplied expectation label.
+- `ExpectedAny` combines labels from alternatives that fail at the same offset.
 - `EmptyMatchInMany` identifies a non-consuming repetition.
 - `EmptyChoice` identifies an empty `choice` list.
 - `NotFollowedBy` identifies forbidden lookahead.
@@ -100,6 +101,10 @@ repetition, or use a parser that consumes at least one token on success.
 
 Errors use token offsets, not line and column numbers. Applications that parse
 text can map offsets to source locations in their own input layer.
+
+When retryable alternatives fail, `or_else` and `choice` preserve the error at
+the furthest offset. This keeps a deeper expectation useful after `attempt()`
+has made a branch eligible for fallback.
 
 Use `label` to replace an expectation at the current input position, and
 `context` to preserve a nested failure while identifying the surrounding rule:

@@ -55,6 +55,53 @@ test "attempt allows an explicitly retried consumed prefix" {
 }
 
 ///|
+test "attempt preserves the furthest failed expectation" {
+  let pair = Parser::token('a', expected="a").then_right(
+    Parser::token('b', expected="b"),
+  )
+  let parser = pair.attempt().or_else(Parser::token('x', expected="x"))
+  match parser.parse(['a', 'c']) {
+    Err(Expected(label~, offset~)) => {
+      inspect(label, content="b")
+      inspect(offset, content="1")
+    }
+    _ => fail("expected the deepest failed branch")
+  }
+}
+
+///|
+test "choice merges expectations at the same offset" {
+  let parser = Parser::choice([
+    Parser::token('a', expected="a"),
+    Parser::token('b', expected="b"),
+  ])
+  match parser.parse(['c']) {
+    Err(ExpectedAny(labels~, offset~)) => {
+      inspect(labels.length(), content="2")
+      inspect(labels[0], content="a")
+      inspect(labels[1], content="b")
+      inspect(offset, content="0")
+    }
+    _ => fail("expected merged alternatives")
+  }
+}
+
+///|
+test "choice preserves the furthest retried failure" {
+  let pair = Parser::token('a', expected="a")
+    .then_right(Parser::token('b', expected="b"))
+    .attempt()
+  let parser = Parser::choice([pair, Parser::token('x', expected="x")])
+  match parser.parse(['a', 'c']) {
+    Err(Expected(label~, offset~)) => {
+      inspect(label, content="b")
+      inspect(offset, content="1")
+    }
+    _ => fail("expected the deepest choice failure")
+  }
+}
+
+///|
 test "cut commits a branch without consuming input" {
   let parser = Parser::cut()
     .then_right(Parser::token('a', expected="a"))
@@ -62,6 +109,32 @@ test "cut commits a branch without consuming input" {
   match parser.parse_all(['b']) {
     Err(error) => inspect(error.offset(), content="0")
     Ok(_) => fail("expected cut to block the fallback")
+  }
+}
+
+///|
+test "attempt cannot revoke a cut" {
+  let parser = Parser::cut()
+    .then_right(Parser::token('a', expected="a"))
+    .attempt()
+    .or_else(Parser::token('b', expected="b"))
+  match parser.parse(['b']) {
+    Err(Expected(label~, offset~)) => {
+      inspect(label, content="a")
+      inspect(offset, content="0")
+    }
+    _ => fail("expected the hard cut to block fallback")
+  }
+}
+
+///|
+test "satisfy keeps its expectation at end of input" {
+  match Parser::token('a', expected="a").parse([]) {
+    Err(Expected(label~, offset~)) => {
+      inspect(label, content="a")
+      inspect(offset, content="0")
+    }
+    _ => fail("expected an EOF expectation")
   }
 }
 
@@ -127,7 +200,7 @@ test "choice selects the first successful alternative" {
 
 ///|
 test "parsers are generic over token type" {
-  let parser = Parser::token(1, expected="one").some()
+  let parser = Parser::token(1, expected="one").many1()
   match parser.parse_all([1, 1, 1]) {
     Ok(values) => inspect(values.length(), content="3")
     Err(_) => fail("expected integer tokens to parse")

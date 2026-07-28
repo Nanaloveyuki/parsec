@@ -35,14 +35,6 @@ pub fn[T, A, B] Parser::flat_map(
 }
 
 ///|
-pub fn[T, A, B] Parser::and_then(
-  self : Parser[T, A],
-  next : (A) -> Parser[T, B],
-) -> Parser[T, B] {
-  self.flat_map(next)
-}
-
-///|
 pub fn[T, A, B] Parser::then(
   self : Parser[T, A],
   next : Parser[T, B],

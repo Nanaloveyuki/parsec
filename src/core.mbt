@@ -22,7 +22,7 @@ pub fn[T, A] Parser::parse_all(
   self : Parser[T, A],
   input : Array[T],
 ) -> Result[A, ParseError] {
-  self.then_left(Parser::end()).parse(input)
+  self.then_left(Parser::eof()).parse(input)
 }
 
 ///|
@@ -59,7 +59,7 @@ pub fn[T] Parser::satisfy(
           Success(token, next, true, false)
         Some(_) =>
           Failure(Expected(label~, offset=state.offset()), false, false)
-        None => Failure(UnexpectedEnd(offset=state.offset()), false, false)
+        None => Failure(Expected(label~, offset=state.offset()), false, false)
       }
     },
   }
@@ -71,7 +71,7 @@ pub fn[T : Eq] Parser::token(token : T, expected~ : String) -> Parser[T, T] {
 }
 
 ///|
-pub fn[T] Parser::end() -> Parser[T, Unit] {
+pub fn[T] Parser::eof() -> Parser[T, Unit] {
   {
     execute: state => {
       if state.is_at_end() {
@@ -85,11 +85,6 @@ pub fn[T] Parser::end() -> Parser[T, Unit] {
       }
     },
   }
-}
-
-///|
-pub fn[T] Parser::eof() -> Parser[T, Unit] {
-  Parser::end()
 }
 
 ///|

@@ -39,7 +39,7 @@ pub fn[T, A] Parser::many(self : Parser[T, A]) -> Parser[T, Array[A]] {
 }
 
 ///|
-pub fn[T, A] Parser::some(self : Parser[T, A]) -> Parser[T, Array[A]] {
+pub fn[T, A] Parser::many1(self : Parser[T, A]) -> Parser[T, Array[A]] {
   self.flat_map(first => {
     self
     .many()
@@ -51,11 +51,6 @@ pub fn[T, A] Parser::some(self : Parser[T, A]) -> Parser[T, Array[A]] {
       values
     })
   })
-}
-
-///|
-pub fn[T, A] Parser::many1(self : Parser[T, A]) -> Parser[T, Array[A]] {
-  self.some()
 }
 
 ///|

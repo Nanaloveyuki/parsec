@@ -2,6 +2,7 @@
 pub(all) enum ParseError {
   UnexpectedEnd(offset~ : Int)
   Expected(label~ : String, offset~ : Int)
+  ExpectedAny(labels~ : Array[String], offset~ : Int)
   EmptyMatchInMany(offset~ : Int)
   EmptyChoice(offset~ : Int)
   NotFollowedBy(label~ : String, offset~ : Int)
@@ -13,10 +14,60 @@ pub fn ParseError::offset(self : ParseError) -> Int {
   match self {
     UnexpectedEnd(offset~) => offset
     Expected(offset~, ..) => offset
+    ExpectedAny(offset~, ..) => offset
     EmptyMatchInMany(offset~) => offset
     EmptyChoice(offset~) => offset
     NotFollowedBy(offset~, ..) => offset
     Context(cause~, ..) => cause.offset()
+  }
+}
+
+///|
+fn append_unique_label(labels : Array[String], label : String) -> Array[String] {
+  let merged = labels.copy()
+  if !merged.contains(label) {
+    merged.push(label)
+  }
+  merged
+}
+
+///|
+fn ParseError::merge_at_same_offset(
+  self : ParseError,
+  other : ParseError,
+) -> ParseError {
+  match (self, other) {
+    (Expected(label=left, offset~), Expected(label=right, ..)) =>
+      if left == right {
+        self
+      } else {
+        ExpectedAny(labels=[left, right], offset~)
+      }
+    (ExpectedAny(labels=left, offset~), Expected(label=right, ..)) =>
+      ExpectedAny(labels=append_unique_label(left, right), offset~)
+    (Expected(label=left, offset~), ExpectedAny(labels=right, ..)) =>
+      ExpectedAny(labels=append_unique_label(right, left), offset~)
+    (ExpectedAny(labels=left, offset~), ExpectedAny(labels=right, ..)) => {
+      let merged = left.copy()
+      for label in right {
+        if !merged.contains(label) {
+          merged.push(label)
+        }
+      }
+      ExpectedAny(labels=merged, offset~)
+    }
+    _ => other
+  }
+}
+
+///|
+fn ParseError::furthest(self : ParseError, other : ParseError) -> ParseError {
+  if self.offset() > other.offset() {
+    self
+  } else if self.offset() < other.offset() {
+    other
+  } else {
+    self.merge_at_same_offset(other)
   }
 }
 
