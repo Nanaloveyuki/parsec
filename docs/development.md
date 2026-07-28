@@ -44,6 +44,7 @@ src/
   char/              Character parser factories over root Array[Char] parsers
   lazy/              Independent persistent pull-stream parser implementation
   lexer/             Source positions, spans, and located lexical values
+  json/              Strict RFC 8259 document parser and limits
 ```
 
 MoonBit packages are directory-based. Files directly inside `src/` form the
@@ -54,6 +55,9 @@ files by responsibility, not by an assumed namespace.
 model. `lazy` owns separate `Stream[T]`, `State[T]`, and `Parser[T, A]` types;
 do not make either package depend on the other's private state. `lexer` owns
 only source-location values and may depend on the public root `ParseError` API.
+`json` may depend on root parser and lexer public APIs, but must not depend on
+JSON5, JSON-RPC, JSONPath, JSONL, or another JSON parser. Keep its strict
+syntax, duplicate-key policy, and resource limits inside the package.
 
 `Reply[T, A]` is package-private. It records consumed and committed state so
 `attempt`, `cut`, `or_else`, and repetition can make correct control-flow

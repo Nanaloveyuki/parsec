@@ -33,6 +33,10 @@ without consuming input; this prevents silently discarding a committed prefix.
 `many` and `many1` collect repetitions. A parser that succeeds without
 consuming input is rejected by `many`, preventing an infinite loop.
 
+`position()` observes the current token offset without consuming input. Feature
+packages use it when a parsed value must retain an exact source offset while
+the root execution state remains private.
+
 `count(n)` parses exactly `n` values, while `repeat_0_to_n(n)` parses at most
 `n`. `sep_by1` requires a non-empty separated list; `option(default)` keeps a
 plain result type when an unconsumed failure should select a default value.

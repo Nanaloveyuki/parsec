@@ -1,20 +1,40 @@
 ///|
-fn[T, A] count_impl(
+fn[T, A] bounded_repeat(
   parser : Parser[T, A],
-  remaining : Int,
+  max_count : Int,
+  stop_on_unconsumed_failure : Bool,
 ) -> Parser[T, Array[A]] {
-  if remaining <= 0 {
-    Parser::pure([])
-  } else {
-    parser.flat_map(first => {
-      count_impl(parser, remaining - 1).map(rest => {
-        let values = [first]
-        for value in rest {
-          values.push(value)
+  {
+    execute: initial => {
+      let values = []
+      let mut current = initial
+      let mut consumed = false
+      let mut committed = false
+      for index = 0; index < max_count; index = index + 1 {
+        match (parser.execute)(current) {
+          Success(value, next, child_consumed, child_committed) => {
+            values.push(value)
+            current = next
+            consumed = consumed || child_consumed
+            committed = committed || child_committed
+          }
+          Failure(error, false, false) =>
+            if stop_on_unconsumed_failure {
+              break Success(values, current, consumed, committed)
+            } else {
+              break Failure(error, consumed, committed)
+            }
+          Failure(error, child_consumed, child_committed) =>
+            break Failure(
+              error,
+              consumed || child_consumed,
+              committed || child_committed,
+            )
         }
-        values
-      })
-    })
+      } nobreak {
+        Success(values, current, consumed, committed)
+      }
+    },
   }
 }
 
@@ -25,29 +45,7 @@ pub fn[T, A] Parser::count(
   self : Parser[T, A],
   count : Int,
 ) -> Parser[T, Array[A]] {
-  count_impl(self, count)
-}
-
-///|
-fn[T, A] repeat_0_to_n_impl(
-  parser : Parser[T, A],
-  remaining : Int,
-) -> Parser[T, Array[A]] {
-  if remaining <= 0 {
-    Parser::pure([])
-  } else {
-    parser
-    .flat_map(first => {
-      repeat_0_to_n_impl(parser, remaining - 1).map(rest => {
-        let values = [first]
-        for value in rest {
-          values.push(value)
-        }
-        values
-      })
-    })
-    .or_else(Parser::pure([]))
-  }
+  bounded_repeat(self, count, false)
 }
 
 ///|
@@ -57,5 +55,5 @@ pub fn[T, A] Parser::repeat_0_to_n(
   self : Parser[T, A],
   max_count : Int,
 ) -> Parser[T, Array[A]] {
-  repeat_0_to_n_impl(self, max_count)
+  bounded_repeat(self, max_count, true)
 }

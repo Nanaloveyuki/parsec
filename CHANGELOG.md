@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- `Nanaloveyuki/parsec/json`, a strict RFC 8259 parser with duplicate-key
+  detection, Unicode escape validation, source offsets, and resource limits.
+- Non-consuming `Parser::position()` for feature packages that need parser
+  offsets without accessing private execution state.
+
 ## 0.1.1 - 2026-07-28
 
 ### Added
