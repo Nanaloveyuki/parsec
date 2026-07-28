@@ -35,10 +35,14 @@ match digit.parse_all(['7']) {
 | `then_left(next)` | Sequences two parsers and keeps the left result. |
 | `replace(value)` / `ignore()` | Replaces a parsed value or discards it as `Unit`. |
 | `optional()` | Produces `Some(value)` or `None`. |
+| `option(default)` | Uses a default after an unconsumed failure. |
 | `many()` / `many1()` | Collects zero-or-more / one-or-more values. |
-| `sep_by(separator)` | Parses zero-or-more values separated by `separator`. |
+| `count(n)` / `repeat_0_to_n(n)` | Parses exactly / at most `n` values. |
+| `sep_by(separator)` / `sep_by1(separator)` | Parses zero-or-more / one-or-more separated values. |
 | `between(open, parser, close)` | Parses a delimited value. |
 | `delay(factory)` | Delays parser construction for recursive grammars. |
+| `sequence(parsers)` | Runs homogeneous parsers in order and collects values. |
+| `lift2(left, right, f)` / `apply(argument)` | Combines heterogeneous parser results. |
 | `look_ahead()` | Requires a parser to succeed without consuming input. |
 | `not_followed_by(expected=...)` | Requires a parser not to match at the current input. |
 
@@ -96,6 +100,7 @@ repetition, or use a parser that consumes at least one token on success.
 - `ExpectedAny` combines labels from alternatives that fail at the same offset.
 - `EmptyMatchInMany` identifies a non-consuming repetition.
 - `EmptyChoice` identifies an empty `choice` list.
+- `UnboundReference` identifies a `ParserRef` that was parsed before `set`.
 - `NotFollowedBy` identifies forbidden lookahead.
 - `Context` wraps a nested parser failure with a grammar label.
 
@@ -149,5 +154,102 @@ fn expression() -> @parsec.Parser[Char, Char] {
 let parser = expression()
 ```
 
+Use `ParserRef` when mutually recursive parsers need to be assembled in
+separate steps. Bind the reference before its parser is run:
+
+```mbt nocheck
+let expression : @parsec.ParserRef[Char, Char] = @parsec.ParserRef::new()
+let nested = expression.parser()
+expression.set(
+  @parsec.Parser::token('x', expected="x").or_else(
+    @parsec.Parser::between(
+      @parsec.Parser::token('(', expected="opening parenthesis"),
+      nested,
+      @parsec.Parser::token(')', expected="closing parenthesis"),
+    ),
+  ),
+)
+```
+
 Keep protocol grammars in their owning packages. `parsec` supplies the parsing
 mechanics; it intentionally does not define URI, JSON, CSV, or lexer policies.
+
+## Feature Packages
+
+The root package is the eager `Array[T]` parser. Optional packages deliberately
+use separate types where their input model needs different state.
+
+### Character Factories
+
+`Nanaloveyuki/parsec/char` returns root parsers, so it composes directly with
+`@parsec.Parser[Char, A]`:
+
+```mbt nocheck
+import {
+  "Nanaloveyuki/parsec" @parsec,
+  "Nanaloveyuki/parsec/char" @char,
+}
+
+let identifier = @char.identifier()
+match identifier.parse_all(['_', '4']) {
+  Ok(value) => println(value)
+  Err(error) => println("parse failed at \{error.offset()}")
+}
+```
+
+### Persistent Pull Streams
+
+`Nanaloveyuki/parsec/lazy` is a separate parser implementation for persistent
+pull streams. Use it when `Array[T]` is not the appropriate input ownership
+model. Its `Stream[T]`, `State[T]`, and `Parser[T, A]` do not interoperate with
+the root package's types.
+
+```mbt nocheck
+import {
+  "Nanaloveyuki/parsec/lazy" @lazy,
+}
+
+let parser = @lazy.Parser::token('o', expected="o").then_right(
+  @lazy.Parser::token('k', expected="k"),
+)
+match parser.parse_all(@lazy.Stream::from_string("ok")) {
+  Ok(value) => println(value)
+  Err(error) => println("parse failed at \{error.offset()}")
+}
+```
+
+Custom streams created with `Stream::from_fn` must be persistent: repeated
+reads of the same stream must return the same token and tail. This is required
+for `attempt` and alternatives to replay input. One-shot or destructive sources
+must be buffered or memoized by the caller for now.
+
+### Source Locations
+
+`Nanaloveyuki/parsec/lexer` turns character offsets into one-based source
+positions and half-open spans. It is a lexical-data package, not a second parser
+implementation, so it can map root parse errors without sharing root state.
+
+```mbt nocheck
+import {
+  "Nanaloveyuki/parsec" @parsec,
+  "Nanaloveyuki/parsec/lexer" @lexer,
+}
+
+let source = @lexer.Source::new("ac")
+let parser = @parsec.Parser::token('a', expected="a").then_right(
+  @parsec.Parser::token('b', expected="b"),
+)
+match parser.parse(['a', 'c']) {
+  Err(error) =>
+    match source.error_position(error) {
+      Some(position) => println("line \{position.line()}, column \{position.column()}")
+      None => ()
+    }
+  Ok(_) => ()
+}
+```
+
+`Source::span(start, end)` creates a half-open `[start, end)` range, and
+`Located[T]` pairs a token or AST-adjacent value with such a span. Recovery,
+trivia ownership, CST construction, and AST lowering intentionally remain
+outside this package.

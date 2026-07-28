@@ -1,0 +1,42 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Nanaloveyuki/parsec/char"
+
+import {
+  "Nanaloveyuki/parsec",
+}
+
+// Values
+pub fn alpha_num() -> @parsec.Parser[Char, Char]
+
+pub fn char(Char) -> @parsec.Parser[Char, Char]
+
+pub fn digit() -> @parsec.Parser[Char, Char]
+
+pub fn digits() -> @parsec.Parser[Char, String]
+
+pub fn identifier() -> @parsec.Parser[Char, String]
+
+pub fn integer() -> @parsec.Parser[Char, Int]
+
+pub fn letter() -> @parsec.Parser[Char, Char]
+
+pub fn one_of(ArrayView[Char], expected~ : String) -> @parsec.Parser[Char, Char]
+
+pub fn satisfy(String, (Char) -> Bool) -> @parsec.Parser[Char, Char]
+
+pub fn spaces() -> @parsec.Parser[Char, Unit]
+
+pub fn string(String) -> @parsec.Parser[Char, String]
+
+pub fn symbol(String) -> @parsec.Parser[Char, String]
+
+pub fn whitespace() -> @parsec.Parser[Char, Char]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

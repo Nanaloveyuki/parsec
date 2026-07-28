@@ -32,3 +32,12 @@ without consuming input; this prevents silently discarding a committed prefix.
 
 `many` and `many1` collect repetitions. A parser that succeeds without
 consuming input is rejected by `many`, preventing an infinite loop.
+
+`count(n)` parses exactly `n` values, while `repeat_0_to_n(n)` parses at most
+`n`. `sep_by1` requires a non-empty separated list; `option(default)` keeps a
+plain result type when an unconsumed failure should select a default value.
+
+`sequence`, `lift2`, and `apply` provide applicative composition. For recursive
+grammars assembled in stages, create a `ParserRef[T, A]`, build parsers with
+`parser()`, then call `set(...)` before parsing. Running an unbound reference
+returns `UnboundReference`.

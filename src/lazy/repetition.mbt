@@ -4,12 +4,6 @@ pub fn[T, A] Parser::optional(self : Parser[T, A]) -> Parser[T, A?] {
 }
 
 ///|
-/// Uses `default` when this parser fails before consuming input.
-pub fn[T, A] Parser::option(self : Parser[T, A], default : A) -> Parser[T, A] {
-  self.or_else(Parser::pure(default))
-}
-
-///|
 pub fn[T, A] Parser::many(self : Parser[T, A]) -> Parser[T, Array[A]] {
   {
     execute: initial => {

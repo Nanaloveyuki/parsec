@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Advanced root combinators: `sequence`, `lift2`, `apply`, `count`,
+  `repeat_0_to_n`, `sep_by1`, `option`, and staged recursive `ParserRef`.
+- `Nanaloveyuki/parsec/char` character factories for whitespace, identifiers,
+  integers, and whitespace-consuming symbols.
+- `Nanaloveyuki/parsec/lazy` independent persistent pull-stream parsers.
+- `Nanaloveyuki/parsec/lexer` source positions, spans, and located values.
+
 ## 0.1.0 - 2026-07-28
 
 ### Added

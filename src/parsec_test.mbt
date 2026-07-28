@@ -281,3 +281,120 @@ test "delay supports recursive grammars" {
     Err(_) => fail("expected nested delimiters to parse")
   }
 }
+
+///|
+test "sequence and lift2 preserve ordered values" {
+  let sequence = Parser::sequence([
+    Parser::token('a', expected="a"),
+    Parser::token('b', expected="b"),
+  ])
+  match sequence.parse_all(['a', 'b']) {
+    Ok(values) => {
+      inspect(values.length(), content="2")
+      inspect(values[0], content="a")
+      inspect(values[1], content="b")
+    }
+    Err(_) => fail("expected sequence to parse")
+  }
+  match sequence.parse_all(['a', 'b']) {
+    Ok(values) => inspect(values.length(), content="2")
+    Err(_) => fail("expected a sequence parser to be reusable")
+  }
+
+  let combined = Parser::lift2(
+    Parser::token(2, expected="two"),
+    Parser::token(3, expected="three"),
+    (left, right) => left + right,
+  )
+  match combined.parse_all([2, 3]) {
+    Ok(value) => inspect(value, content="5")
+    Err(_) => fail("expected lift2 to combine values")
+  }
+}
+
+///|
+test "apply applies a parsed function" {
+  let function : Parser[Int, (Int) -> Int] = Parser::token(
+    0,
+    expected="function marker",
+  ).replace(value => value + 1)
+  match
+    function.apply(Parser::token(4, expected="argument")).parse_all([0, 4]) {
+    Ok(value) => inspect(value, content="5")
+    Err(_) => fail("expected apply to parse both operands")
+  }
+}
+
+///|
+test "count parses exactly its requested number of values" {
+  let parser = Parser::token('a', expected="a").count(3)
+  match parser.parse_all(['a', 'a', 'a']) {
+    Ok(values) => inspect(values.length(), content="3")
+    Err(_) => fail("expected exact repetition to parse")
+  }
+  match parser.parse(['a', 'a', 'x']) {
+    Err(error) => inspect(error.offset(), content="2")
+    Ok(_) => fail("expected exact repetition to reject a missing value")
+  }
+}
+
+///|
+test "repeat_0_to_n stops before an unconsumed mismatch" {
+  let parser = Parser::token('a', expected="a").repeat_0_to_n(2)
+  match parser.run(State::new(['a', 'a', 'b'])) {
+    Ok((values, state)) => {
+      inspect(values.length(), content="2")
+      inspect(state.offset(), content="2")
+    }
+    Err(_) => fail("expected bounded repetition to stop at its bound")
+  }
+  match parser.parse(['b']) {
+    Ok(values) => inspect(values.length(), content="0")
+    Err(_) => fail("expected bounded repetition to accept zero values")
+  }
+}
+
+///|
+test "sep_by1 requires its first value and option supplies a default" {
+  let values = Parser::token('a', expected="a").sep_by1(
+    Parser::token(',', expected="comma"),
+  )
+  match values.parse_all(['a', ',', 'a']) {
+    Ok(result) => inspect(result.length(), content="2")
+    Err(_) => fail("expected a non-empty separated list")
+  }
+  match values.parse([]) {
+    Err(error) => inspect(error.offset(), content="0")
+    Ok(_) => fail("expected sep_by1 to reject an empty list")
+  }
+
+  match Parser::token('a', expected="a").option('x').parse(['x']) {
+    Ok(value) => inspect(value, content="x")
+    Err(_) => fail("expected option to use its default")
+  }
+}
+
+///|
+test "parser references support recursive grammars and reject missing bindings" {
+  let slot : ParserRef[Char, Char] = ParserRef::new()
+  let nested = slot.parser()
+  slot.set(
+    Parser::token('x', expected="x").or_else(
+      Parser::between(
+        Parser::token('(', expected="opening parenthesis"),
+        nested,
+        Parser::token(')', expected="closing parenthesis"),
+      ),
+    ),
+  )
+  match nested.parse_all(['(', 'x', ')']) {
+    Ok(value) => inspect(value, content="x")
+    Err(_) => fail("expected the parser reference to recurse")
+  }
+
+  let unbound : ParserRef[Char, Char] = ParserRef::new()
+  match unbound.parser().parse([]) {
+    Err(UnboundReference(offset~)) => inspect(offset, content="0")
+    _ => fail("expected an unbound parser reference error")
+  }
+}
