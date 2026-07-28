@@ -1,0 +1,58 @@
+name: MoonBit validation
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install MoonBit
+        shell: bash
+        if: runner.os != 'Windows'
+        run: curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+      - name: Install MoonBit
+        shell: pwsh
+        if: runner.os == 'Windows'
+        run: Invoke-RestMethod https://cli.moonbitlang.com/install/powershell.ps1 | Invoke-Expression
+      - name: Add MoonBit to PATH
+        shell: bash
+        if: runner.os != 'Windows'
+        run: echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - name: Add MoonBit to PATH
+        shell: pwsh
+        if: runner.os == 'Windows'
+        run: "$HOME\\.moon\\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Install dependencies
+        run: |
+          moon update
+          moon install
+      - name: Check formatting and generated interfaces
+        run: |
+          moon fmt --check
+          moon info
+          git diff --exit-code --ignore-blank-lines
+      - name: Check and test every backend
+        run: |
+          moon check --target all
+          moon test --target all
