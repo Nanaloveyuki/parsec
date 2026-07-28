@@ -1,0 +1,68 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Nanaloveyuki/parsec"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) enum ParseError {
+  UnexpectedEnd(offset~ : Int)
+  Expected(label~ : String, offset~ : Int)
+  EmptyMatchInMany(offset~ : Int)
+  EmptyChoice(offset~ : Int)
+  NotFollowedBy(label~ : String, offset~ : Int)
+  Context(label~ : String, cause~ : ParseError)
+}
+pub fn ParseError::offset(Self) -> Int
+
+pub struct Parser[T, A] {
+  // private fields
+}
+pub fn[T, A, B] Parser::and_then(Self[T, A], (A) -> Self[T, B]) -> Self[T, B]
+pub fn[T, A] Parser::attempt(Self[T, A]) -> Self[T, A]
+pub fn[T, Open, A, Close] Parser::between(Self[T, Open], Self[T, A], Self[T, Close]) -> Self[T, A]
+pub fn[T, A] Parser::choice(Array[Self[T, A]]) -> Self[T, A]
+pub fn[T, A] Parser::context(Self[T, A], String) -> Self[T, A]
+pub fn[T] Parser::cut() -> Self[T, Unit]
+pub fn[T, A] Parser::delay(() -> Self[T, A]) -> Self[T, A]
+pub fn[T] Parser::end() -> Self[T, Unit]
+pub fn[T] Parser::eof() -> Self[T, Unit]
+pub fn[T, A] Parser::fail(ParseError) -> Self[T, A]
+pub fn[T, A, B] Parser::flat_map(Self[T, A], (A) -> Self[T, B]) -> Self[T, B]
+pub fn[T, A] Parser::ignore(Self[T, A]) -> Self[T, Unit]
+pub fn[T] Parser::item() -> Self[T, T]
+pub fn[T, A] Parser::label(Self[T, A], String) -> Self[T, A]
+pub fn[T, A] Parser::look_ahead(Self[T, A]) -> Self[T, A]
+pub fn[T, A] Parser::many(Self[T, A]) -> Self[T, Array[A]]
+pub fn[T, A] Parser::many1(Self[T, A]) -> Self[T, Array[A]]
+pub fn[T, A, B] Parser::map(Self[T, A], (A) -> B) -> Self[T, B]
+pub fn[T, A] Parser::not_followed_by(Self[T, A], expected~ : String) -> Self[T, Unit]
+pub fn[T, A] Parser::optional(Self[T, A]) -> Self[T, A?]
+pub fn[T, A] Parser::or_else(Self[T, A], Self[T, A]) -> Self[T, A]
+pub fn[T, A] Parser::parse(Self[T, A], Array[T]) -> Result[A, ParseError]
+pub fn[T, A] Parser::parse_all(Self[T, A], Array[T]) -> Result[A, ParseError]
+pub fn[T, A] Parser::pure(A) -> Self[T, A]
+pub fn[T, A, B] Parser::replace(Self[T, A], B) -> Self[T, B]
+pub fn[T, A] Parser::run(Self[T, A], State[T]) -> Result[(A, State[T]), ParseError]
+pub fn[T] Parser::satisfy(String, (T) -> Bool) -> Self[T, T]
+pub fn[T, A, S] Parser::sep_by(Self[T, A], Self[T, S]) -> Self[T, Array[A]]
+pub fn[T, A] Parser::some(Self[T, A]) -> Self[T, Array[A]]
+pub fn[T, A, B] Parser::then(Self[T, A], Self[T, B]) -> Self[T, (A, B)]
+pub fn[T, A, B] Parser::then_left(Self[T, A], Self[T, B]) -> Self[T, A]
+pub fn[T, A, B] Parser::then_right(Self[T, A], Self[T, B]) -> Self[T, B]
+pub fn[T : Eq] Parser::token(T, expected~ : String) -> Self[T, T]
+
+type Reply[T, A]
+
+pub struct State[T] {
+  // private fields
+}
+pub fn[T] State::is_at_end(Self[T]) -> Bool
+pub fn[T] State::new(Array[T]) -> Self[T]
+pub fn[T] State::offset(Self[T]) -> Int
+
+// Type aliases
+
+// Traits
+
