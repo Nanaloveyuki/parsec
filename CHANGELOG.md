@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.3 - 2026-08-09
+
+### Fixed
+
+- Regenerated package interfaces with the current MoonBit toolchain so CI's
+  generated-interface verification remains clean after the toolchain update.
+
 ## 0.1.2 - 2026-07-28
 
 ### Added
