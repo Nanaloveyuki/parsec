@@ -46,4 +46,3 @@ pub fn Span::start(Self) -> Position
 // Type aliases
 
 // Traits
-

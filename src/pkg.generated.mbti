@@ -79,4 +79,3 @@ pub fn[T] State::offset(Self[T]) -> Int
 // Type aliases
 
 // Traits
-

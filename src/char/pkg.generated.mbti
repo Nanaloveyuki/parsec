@@ -39,4 +39,3 @@ pub fn whitespace() -> @parsec.Parser[Char, Char]
 // Type aliases
 
 // Traits
-

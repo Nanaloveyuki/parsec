@@ -71,4 +71,3 @@ pub fn[T] Stream::next(Self[T]) -> (T, Self[T])?
 // Type aliases
 
 // Traits
-
