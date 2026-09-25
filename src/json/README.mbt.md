@@ -7,7 +7,7 @@ resource limits. It does not depend on JSON5, JSON-RPC, JSONPath, or JSONL.
 ```mbt check
 ///|
 test "parse strict JSON" {
-  match parse("{\"enabled\":true,\"retries\":3}") {
+  match @json.parse("{\"enabled\":true,\"retries\":3}") {
     Ok(Object(members~)) => inspect(members.length(), content="2")
     Err(_) => fail("expected JSON object")
     _ => fail("expected JSON object")

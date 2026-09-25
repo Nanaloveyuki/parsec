@@ -32,7 +32,7 @@ pub fn[T, A] Parser::attempt(self : Parser[T, A]) -> Parser[T, A] {
 
 ///|
 pub fn[T] Parser::cut() -> Parser[T, Unit] {
-  { execute: state => Success((), state, false, true) }
+  { execute: state => Success((), state, false, true), }
 }
 
 ///|

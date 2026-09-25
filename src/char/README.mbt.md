@@ -8,10 +8,10 @@ whitespace, so it can be used directly in a token parser.
 ```mbt check
 ///|
 test "parse a binding" {
-  let binding = identifier()
-    .then_left(spaces())
-    .then_left(symbol("="))
-    .then_left(integer())
+  let binding = @char.identifier()
+    .then_left(@char.spaces())
+    .then_left(@char.symbol("="))
+    .then_left(@char.integer())
   match
     binding.parse_all(['a', 'n', 's', 'w', 'e', 'r', ' ', '=', ' ', '4', '2']) {
     Ok(value) => inspect(value, content="answer")

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.4 - 2026-09-25
+
+### Fixed
+
+- Qualify black-box tests and package examples for MoonBit warning 25
+  (`test_unqualified_package`) on toolchain 0.1.20260920.
+
 ## 0.1.3 - 2026-08-09
 
 ### Fixed

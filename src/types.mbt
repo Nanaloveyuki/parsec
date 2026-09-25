@@ -81,7 +81,7 @@ pub struct State[T] {
 
 ///|
 pub fn[T] State::new(input : Array[T]) -> State[T] {
-  { input, offset: 0 }
+  { input, offset: 0, }
 }
 
 ///|
@@ -97,7 +97,8 @@ pub fn[T] State::is_at_end(self : State[T]) -> Bool {
 ///|
 fn[T] State::next(self : State[T]) -> (T, State[T])? {
   match self.input.get(self.offset) {
-    Some(token) => Some((token, { input: self.input, offset: self.offset + 1 }))
+    Some(token) =>
+      Some((token, { input: self.input, offset: self.offset + 1, }))
     None => None
   }
 }

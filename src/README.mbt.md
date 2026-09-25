@@ -12,10 +12,10 @@ Use `token` for equality-based matching and finish a complete grammar with
 ```mbt check
 ///|
 test "parse a delimited token" {
-  let parser = Parser::between(
-    Parser::token('(', expected="opening parenthesis"),
-    Parser::token('x', expected="x"),
-    Parser::token(')', expected="closing parenthesis"),
+  let parser = @parsec.Parser::between(
+    @parsec.Parser::token('(', expected="opening parenthesis"),
+    @parsec.Parser::token('x', expected="x"),
+    @parsec.Parser::token(')', expected="closing parenthesis"),
   )
   match parser.parse_all(['(', 'x', ')']) {
     Ok(value) => inspect(value, content="x")

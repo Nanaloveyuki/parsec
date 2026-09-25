@@ -58,7 +58,7 @@ fn property(
   .flat_map(key => {
     token(':', expected="colon")
     .then_right(@parsec.Parser::delay(() => value(limits, depth + 1)))
-    .map(value => { key: key.1, key_offset: key.0, value })
+    .map(value => { key: key.1, key_offset: key.0, value, })
   })
 }
 

@@ -12,10 +12,10 @@ can replay input.
 ```mbt check
 ///|
 test "parse a lazy character stream" {
-  let parser = Parser::token('o', expected="o").then_right(
-    Parser::token('k', expected="k"),
+  let parser = @lazy.Parser::token('o', expected="o").then_right(
+    @lazy.Parser::token('k', expected="k"),
   )
-  match parser.parse_all(Stream::from_string("ok")) {
+  match parser.parse_all(@lazy.Stream::from_string("ok")) {
     Ok(value) => inspect(value, content="k")
     Err(_) => fail("expected lazy input")
   }

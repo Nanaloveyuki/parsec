@@ -49,7 +49,7 @@ pub struct Located[T] {
 
 ///|
 pub fn[T] Located::new(value : T, span : Span) -> Located[T] {
-  { value, span }
+  { value, span, }
 }
 
 ///|
@@ -67,7 +67,7 @@ pub fn[T, U] Located::map(
   self : Located[T],
   transform : (T) -> U,
 ) -> Located[U] {
-  { value: transform(self.value), span: self.span }
+  { value: transform(self.value), span: self.span, }
 }
 
 ///|
@@ -87,7 +87,7 @@ pub fn Source::new(text : String) -> Source {
       line_starts.push(length)
     }
   }
-  { text, length, line_starts }
+  { text, length, line_starts, }
 }
 
 ///|
@@ -118,7 +118,7 @@ pub fn Source::position_at(self : Source, offset : Int) -> Position? {
       line_index = index
     }
     let line_start = self.line_starts[line_index]
-    Some({ offset, line: line_index + 1, column: offset - line_start + 1 })
+    Some({ offset, line: line_index + 1, column: offset - line_start + 1, })
   }
 }
 
@@ -128,7 +128,7 @@ pub fn Source::span(self : Source, start : Int, end : Int) -> Span? {
     None
   } else {
     match (self.position_at(start), self.position_at(end)) {
-      (Some(start), Some(end)) => Some({ start, end })
+      (Some(start), Some(end)) => Some({ start, end, })
       _ => None
     }
   }

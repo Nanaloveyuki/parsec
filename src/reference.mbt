@@ -7,7 +7,7 @@ pub struct ParserRef[T, A] {
 ///|
 /// Creates an unbound recursive parser slot.
 pub fn[T, A] ParserRef::new() -> ParserRef[T, A] {
-  { target: @ref.new(None) }
+  { target: @ref.new(None), }
 }
 
 ///|

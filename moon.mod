@@ -1,6 +1,6 @@
 name = "Nanaloveyuki/parsec"
 
-version = "0.1.3"
+version = "0.1.4"
 
 description = "Composable, token-generic parsers for MoonBit."
 

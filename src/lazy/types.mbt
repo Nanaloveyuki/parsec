@@ -119,7 +119,7 @@ pub struct State[T] {
 
 ///|
 pub fn[T] State::new(stream : Stream[T]) -> State[T] {
-  { stream, offset: 0 }
+  { stream, offset: 0, }
 }
 
 ///|
@@ -130,7 +130,7 @@ pub fn[T] State::offset(self : State[T]) -> Int {
 ///|
 fn[T] State::next(self : State[T]) -> (T, State[T])? {
   match self.stream.next() {
-    Some((token, stream)) => Some((token, { stream, offset: self.offset + 1 }))
+    Some((token, stream)) => Some((token, { stream, offset: self.offset + 1, }))
     None => None
   }
 }

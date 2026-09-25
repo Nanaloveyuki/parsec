@@ -27,12 +27,12 @@ pub fn[T, A] Parser::parse_all(
 
 ///|
 pub fn[T, A] Parser::pure(value : A) -> Parser[T, A] {
-  { execute: state => Success(value, state, false, false) }
+  { execute: state => Success(value, state, false, false), }
 }
 
 ///|
 pub fn[T, A] Parser::fail(error : ParseError) -> Parser[T, A] {
-  { execute: _ => Failure(error, false, false) }
+  { execute: _ => Failure(error, false, false), }
 }
 
 ///|
@@ -89,5 +89,5 @@ pub fn[T] Parser::eof() -> Parser[T, Unit] {
 
 ///|
 pub fn[T, A] Parser::delay(factory : () -> Parser[T, A]) -> Parser[T, A] {
-  { execute: state => (factory().execute)(state) }
+  { execute: state => (factory().execute)(state), }
 }

@@ -26,7 +26,7 @@ fn leading_a(input : Array[Char]) -> Int {
 
 ///|
 fn run_success_matches(
-  result : Result[(Array[Char], State[Char]), ParseError],
+  result : Result[(Array[Char], @parsec.State[Char]), @parsec.ParseError],
   expected : Array[Char],
   expected_offset : Int,
 ) -> Bool {
@@ -39,7 +39,7 @@ fn run_success_matches(
 
 ///|
 fn run_failure_matches(
-  result : Result[(Array[Char], State[Char]), ParseError],
+  result : Result[(Array[Char], @parsec.State[Char]), @parsec.ParseError],
   expected_offset : Int,
 ) -> Bool {
   match result {
@@ -50,7 +50,7 @@ fn run_failure_matches(
 
 ///|
 fn[A] parse_failure_matches(
-  result : Result[A, ParseError],
+  result : Result[A, @parsec.ParseError],
   expected_offset : Int,
 ) -> Bool {
   match result {
@@ -86,7 +86,7 @@ fn sep_by_model(
 
 ///|
 fn separated_run_matches(
-  result : Result[(Array[Char], State[Char]), ParseError],
+  result : Result[(Array[Char], @parsec.State[Char]), @parsec.ParseError],
   model : (Bool, Array[Char], Int),
 ) -> Bool {
   let (succeeds, values, offset) = model
@@ -102,7 +102,7 @@ test "quickcheck: parse_all matches the single-token model" {
   @quickcheck.check(
     (raw : Array[Int]) => {
       let input = alphabetize(raw)
-      let parser = Parser::token('b', expected="b")
+      let parser = @parsec.Parser::token('b', expected="b")
       match parser.parse_all(input) {
         Ok(value) => input.length() == 1 && input[0] == 'b' && value == 'b'
         Err(error) => {
@@ -127,8 +127,8 @@ test "quickcheck: flat_map uses the parsed token and preserves its offset" {
   @quickcheck.check(
     (raw : Array[Int]) => {
       let input = alphabetize(raw)
-      let parser = Parser::item().flat_map(expected => {
-        Parser::token(expected, expected="repeated token")
+      let parser = @parsec.Parser::item().flat_map(expected => {
+        @parsec.Parser::token(expected, expected="repeated token")
       })
       match parser.parse(input) {
         Ok(value) =>
@@ -152,10 +152,10 @@ test "quickcheck: many agrees with the leading-token model" {
     (raw : Array[Int]) => {
       let input = alphabetize(raw)
       let count = leading_a(input)
-      let parser = Parser::token('a', expected="a").many()
+      let parser = @parsec.Parser::token('a', expected="a").many()
       let expected = Array::makei(count, _ => 'a')
       let prefix_ok = run_success_matches(
-        parser.run(State::new(input)),
+        parser.run(@parsec.State::new(input)),
         expected,
         count,
       )
@@ -184,9 +184,9 @@ test "quickcheck: bounded repetition agrees with a bounded prefix model" {
       let limit = input.1 & 15
       let prefix = leading_a(tokens)
       let count = if prefix < limit { prefix } else { limit }
-      let parser = Parser::token('a', expected="a").repeat_0_to_n(limit)
+      let parser = @parsec.Parser::token('a', expected="a").repeat_0_to_n(limit)
       run_success_matches(
-        parser.run(State::new(tokens)),
+        parser.run(@parsec.State::new(tokens)),
         Array::makei(count, _ => 'a'),
         count,
       )
@@ -205,10 +205,10 @@ test "quickcheck: exact repetition rejects the first missing token" {
       let tokens = alphabetize(input.0)
       let requested = (input.1 & 7) - 2
       let prefix = leading_a(tokens)
-      let parser = Parser::token('a', expected="a").count(requested)
+      let parser = @parsec.Parser::token('a', expected="a").count(requested)
       if requested <= 0 || prefix >= requested {
         run_success_matches(
-          parser.run(State::new(tokens)),
+          parser.run(@parsec.State::new(tokens)),
           Array::makei(if requested > 0 { requested } else { 0 }, _ => 'a'),
           if requested > 0 {
             requested
@@ -217,7 +217,7 @@ test "quickcheck: exact repetition rejects the first missing token" {
           },
         )
       } else {
-        run_failure_matches(parser.run(State::new(tokens)), prefix)
+        run_failure_matches(parser.run(@parsec.State::new(tokens)), prefix)
       }
     },
     count=250,
@@ -239,16 +239,16 @@ test "quickcheck: separated repetition matches an independent scanner" {
           _ => 'x'
         }
       })
-      let value = Parser::token('a', expected="value")
-      let separator = Parser::token(',', expected="separator")
+      let value = @parsec.Parser::token('a', expected="value")
+      let separator = @parsec.Parser::token(',', expected="separator")
       let zero_or_more = value.sep_by(separator)
       let one_or_more = value.sep_by1(separator)
       separated_run_matches(
-        zero_or_more.run(State::new(input)),
+        zero_or_more.run(@parsec.State::new(input)),
         sep_by_model(input, false),
       ) &&
       separated_run_matches(
-        one_or_more.run(State::new(input)),
+        one_or_more.run(@parsec.State::new(input)),
         sep_by_model(input, true),
       )
     },
@@ -264,12 +264,12 @@ test "quickcheck: choice keeps the furthest retryable failure" {
   @quickcheck.check(
     (raw : Array[Int]) => {
       let input = alphabetize(raw)
-      let pair = Parser::token('a', expected="a").then_right(
-        Parser::token('b', expected="b"),
+      let pair = @parsec.Parser::token('a', expected="a").then_right(
+        @parsec.Parser::token('b', expected="b"),
       )
-      let parser = Parser::choice([
+      let parser = @parsec.Parser::choice([
         pair.attempt(),
-        Parser::token('x', expected="x"),
+        @parsec.Parser::token('x', expected="x"),
       ])
       match parser.parse(input) {
         Ok(value) =>
@@ -306,12 +306,12 @@ test "quickcheck: lookahead and negative lookahead preserve the caller state" {
   @quickcheck.check(
     (raw : Array[Int]) => {
       let input = alphabetize(raw)
-      let positive = Parser::token('a', expected="a")
+      let positive = @parsec.Parser::token('a', expected="a")
         .look_ahead()
-        .then_right(Parser::position())
-      let negative = Parser::token('a', expected="a")
+        .then_right(@parsec.Parser::position())
+      let negative = @parsec.Parser::token('a', expected="a")
         .not_followed_by(expected="a")
-        .then_right(Parser::item())
+        .then_right(@parsec.Parser::item())
       let positive_ok = match positive.parse(input) {
         Ok(offset) => input.length() > 0 && input[0] == 'a' && offset == 0
         Err(error) =>

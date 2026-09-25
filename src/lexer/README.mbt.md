@@ -7,7 +7,7 @@ half-open ranges: `[start, end)`.
 ```mbt check
 ///|
 test "locate a parser error" {
-  let source = Source::new("ab\ncd")
+  let source = @lexer.Source::new("ab\ncd")
   match source.position_at(3) {
     Some(position) => {
       inspect(position.line(), content="2")
