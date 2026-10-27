@@ -1,5 +1,5 @@
 ///|
-fn countdown(start : Int) -> @lazy.Stream[Int] {
+fn countdown(start : Int32) -> @lazy.Stream[Int32] {
   @lazy.Stream::from_fn(() => {
     if start > 0 {
       Some((start, countdown(start - 1)))

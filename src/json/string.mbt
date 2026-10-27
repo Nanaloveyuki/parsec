@@ -1,5 +1,5 @@
 ///|
-fn unicode_character(code : Int) -> @parsec.Parser[Char, Char] {
+fn unicode_character(code : Int32) -> @parsec.Parser[Char, Char] {
   if code >= 0xD800 && code <= 0xDBFF {
     raw_char('\\', expected="low surrogate escape")
     .then_right(raw_char('u', expected="low surrogate escape"))

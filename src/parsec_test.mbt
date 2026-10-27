@@ -257,7 +257,7 @@ test "not_followed_by rejects a matching parser" {
 ///|
 test "many rejects a successful parser that does not consume input" {
   let input : Array[Char] = []
-  let parser : @parsec.Parser[Char, Array[Int]] = @parsec.Parser::pure(1).many()
+  let parser : @parsec.Parser[Char, Array[Int32]] = @parsec.Parser::pure(1).many()
   match parser.parse(input) {
     Err(error) => inspect(error.offset(), content="0")
     Ok(_) => fail("expected a non-consuming parser to fail many")
@@ -341,7 +341,7 @@ test "sequence and lift2 preserve ordered values" {
 
 ///|
 test "apply applies a parsed function" {
-  let function : @parsec.Parser[Int, (Int) -> Int] = @parsec.Parser::token(
+  let function : @parsec.Parser[Int32, (Int32) -> Int32] = @parsec.Parser::token(
     0,
     expected="function marker",
   ).replace(value => value + 1)

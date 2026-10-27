@@ -1,7 +1,7 @@
 ///|
 fn[T, A] bounded_repeat(
   parser : Parser[T, A],
-  max_count : Int,
+  max_count : Int32,
   stop_on_unconsumed_failure : Bool,
 ) -> Parser[T, Array[A]] {
   {
@@ -43,7 +43,7 @@ fn[T, A] bounded_repeat(
 /// values and consume no input.
 pub fn[T, A] Parser::count(
   self : Parser[T, A],
-  count : Int,
+  count : Int32,
 ) -> Parser[T, Array[A]] {
   bounded_repeat(self, count, false)
 }
@@ -53,7 +53,7 @@ pub fn[T, A] Parser::count(
 /// Non-positive bounds succeed with no values and consume no input.
 pub fn[T, A] Parser::repeat_0_to_n(
   self : Parser[T, A],
-  max_count : Int,
+  max_count : Int32,
 ) -> Parser[T, Array[A]] {
   bounded_repeat(self, max_count, true)
 }

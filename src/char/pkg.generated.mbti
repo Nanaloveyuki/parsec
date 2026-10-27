@@ -16,7 +16,7 @@ pub fn digits() -> @parsec.Parser[Char, String]
 
 pub fn identifier() -> @parsec.Parser[Char, String]
 
-pub fn integer() -> @parsec.Parser[Char, Int]
+pub fn integer() -> @parsec.Parser[Char, Int32]
 
 pub fn letter() -> @parsec.Parser[Char, Char]
 

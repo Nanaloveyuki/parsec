@@ -54,7 +54,7 @@ fn validate_items(items : Array[RawJson]) -> Result[Array[Json], JsonError] {
 ///|
 fn validate_members(
   members : Array[RawMember],
-  seen : @hashmap.HashMap[String, Int],
+  seen : @hashmap.HashMap[String, Int32],
 ) -> Result[Array[(String, Json)], JsonError] {
   let values = []
   let mut failure : JsonError? = None
@@ -101,7 +101,7 @@ fn validate(raw : RawJson) -> Result[Json, JsonError] {
         Err(error) => Err(error)
       }
     Object(members) => {
-      let seen : HashMap[String, Int] = HashMap([], capacity=members.length())
+      let seen : HashMap[String, Int32] = HashMap([], capacity=members.length())
       match validate_members(members, seen) {
         Ok(values) => Ok(Object(members=values))
         Err(error) => Err(error)

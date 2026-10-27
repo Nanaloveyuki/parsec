@@ -1,16 +1,16 @@
 ///|
 pub(all) enum ParseError {
-  UnexpectedEnd(offset~ : Int)
-  Expected(label~ : String, offset~ : Int)
-  ExpectedAny(labels~ : Array[String], offset~ : Int)
-  EmptyMatchInMany(offset~ : Int)
-  EmptyChoice(offset~ : Int)
-  NotFollowedBy(label~ : String, offset~ : Int)
+  UnexpectedEnd(offset~ : Int32)
+  Expected(label~ : String, offset~ : Int32)
+  ExpectedAny(labels~ : Array[String], offset~ : Int32)
+  EmptyMatchInMany(offset~ : Int32)
+  EmptyChoice(offset~ : Int32)
+  NotFollowedBy(label~ : String, offset~ : Int32)
   Context(label~ : String, cause~ : ParseError)
 }
 
 ///|
-pub fn ParseError::offset(self : ParseError) -> Int {
+pub fn ParseError::offset(self : ParseError) -> Int32 {
   match self {
     UnexpectedEnd(offset~) => offset
     Expected(offset~, ..) => offset
@@ -87,7 +87,7 @@ pub fn[T] Stream::empty() -> Stream[T] {
 }
 
 ///|
-fn[T] Stream::from_array_at(input : Array[T], offset : Int) -> Stream[T] {
+fn[T] Stream::from_array_at(input : Array[T], offset : Int32) -> Stream[T] {
   Stream::from_fn(() => {
     match input.get(offset) {
       Some(value) => Some((value, Stream::from_array_at(input, offset + 1)))
@@ -114,7 +114,7 @@ pub fn[T] Stream::next(self : Stream[T]) -> (T, Stream[T])? {
 ///|
 pub struct State[T] {
   priv stream : Stream[T]
-  priv offset : Int
+  priv offset : Int32
 }
 
 ///|
@@ -123,7 +123,7 @@ pub fn[T] State::new(stream : Stream[T]) -> State[T] {
 }
 
 ///|
-pub fn[T] State::offset(self : State[T]) -> Int {
+pub fn[T] State::offset(self : State[T]) -> Int32 {
   self.offset
 }
 

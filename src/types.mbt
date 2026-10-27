@@ -1,17 +1,17 @@
 ///|
 pub(all) enum ParseError {
-  UnexpectedEnd(offset~ : Int)
-  Expected(label~ : String, offset~ : Int)
-  ExpectedAny(labels~ : Array[String], offset~ : Int)
-  EmptyMatchInMany(offset~ : Int)
-  EmptyChoice(offset~ : Int)
-  UnboundReference(offset~ : Int)
-  NotFollowedBy(label~ : String, offset~ : Int)
+  UnexpectedEnd(offset~ : Int32)
+  Expected(label~ : String, offset~ : Int32)
+  ExpectedAny(labels~ : Array[String], offset~ : Int32)
+  EmptyMatchInMany(offset~ : Int32)
+  EmptyChoice(offset~ : Int32)
+  UnboundReference(offset~ : Int32)
+  NotFollowedBy(label~ : String, offset~ : Int32)
   Context(label~ : String, cause~ : ParseError)
 }
 
 ///|
-pub fn ParseError::offset(self : ParseError) -> Int {
+pub fn ParseError::offset(self : ParseError) -> Int32 {
   match self {
     UnexpectedEnd(offset~) => offset
     Expected(offset~, ..) => offset
@@ -76,7 +76,7 @@ fn ParseError::furthest(self : ParseError, other : ParseError) -> ParseError {
 ///|
 pub struct State[T] {
   priv input : Array[T]
-  priv offset : Int
+  priv offset : Int32
 }
 
 ///|
@@ -85,7 +85,7 @@ pub fn[T] State::new(input : Array[T]) -> State[T] {
 }
 
 ///|
-pub fn[T] State::offset(self : State[T]) -> Int {
+pub fn[T] State::offset(self : State[T]) -> Int32 {
   self.offset
 }
 

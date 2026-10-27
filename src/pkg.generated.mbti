@@ -7,16 +7,16 @@ package "Nanaloveyuki/parsec"
 
 // Types and methods
 pub(all) enum ParseError {
-  UnexpectedEnd(offset~ : Int)
-  Expected(label~ : String, offset~ : Int)
-  ExpectedAny(labels~ : Array[String], offset~ : Int)
-  EmptyMatchInMany(offset~ : Int)
-  EmptyChoice(offset~ : Int)
-  UnboundReference(offset~ : Int)
-  NotFollowedBy(label~ : String, offset~ : Int)
+  UnexpectedEnd(offset~ : Int32)
+  Expected(label~ : String, offset~ : Int32)
+  ExpectedAny(labels~ : Array[String], offset~ : Int32)
+  EmptyMatchInMany(offset~ : Int32)
+  EmptyChoice(offset~ : Int32)
+  UnboundReference(offset~ : Int32)
+  NotFollowedBy(label~ : String, offset~ : Int32)
   Context(label~ : String, cause~ : ParseError)
 }
-pub fn ParseError::offset(Self) -> Int
+pub fn ParseError::offset(Self) -> Int32
 
 pub struct Parser[T, A] {
   // private fields
@@ -26,7 +26,7 @@ pub fn[T, A] Parser::attempt(Self[T, A]) -> Self[T, A]
 pub fn[T, Open, A, Close] Parser::between(Self[T, Open], Self[T, A], Self[T, Close]) -> Self[T, A]
 pub fn[T, A] Parser::choice(Array[Self[T, A]]) -> Self[T, A]
 pub fn[T, A] Parser::context(Self[T, A], String) -> Self[T, A]
-pub fn[T, A] Parser::count(Self[T, A], Int) -> Self[T, Array[A]]
+pub fn[T, A] Parser::count(Self[T, A], Int32) -> Self[T, Array[A]]
 pub fn[T] Parser::cut() -> Self[T, Unit]
 pub fn[T, A] Parser::delay(() -> Self[T, A]) -> Self[T, A]
 pub fn[T] Parser::eof() -> Self[T, Unit]
@@ -46,9 +46,9 @@ pub fn[T, A] Parser::optional(Self[T, A]) -> Self[T, A?]
 pub fn[T, A] Parser::or_else(Self[T, A], Self[T, A]) -> Self[T, A]
 pub fn[T, A] Parser::parse(Self[T, A], Array[T]) -> Result[A, ParseError]
 pub fn[T, A] Parser::parse_all(Self[T, A], Array[T]) -> Result[A, ParseError]
-pub fn[T] Parser::position() -> Self[T, Int]
+pub fn[T] Parser::position() -> Self[T, Int32]
 pub fn[T, A] Parser::pure(A) -> Self[T, A]
-pub fn[T, A] Parser::repeat_0_to_n(Self[T, A], Int) -> Self[T, Array[A]]
+pub fn[T, A] Parser::repeat_0_to_n(Self[T, A], Int32) -> Self[T, Array[A]]
 pub fn[T, A, B] Parser::replace(Self[T, A], B) -> Self[T, B]
 pub fn[T, A] Parser::run(Self[T, A], State[T]) -> Result[(A, State[T]), ParseError]
 pub fn[T] Parser::satisfy(String, (T) -> Bool) -> Self[T, T]
@@ -74,7 +74,7 @@ pub struct State[T] {
 }
 pub fn[T] State::is_at_end(Self[T]) -> Bool
 pub fn[T] State::new(Array[T]) -> Self[T]
-pub fn[T] State::offset(Self[T]) -> Int
+pub fn[T] State::offset(Self[T]) -> Int32
 
 // Type aliases
 

@@ -77,7 +77,7 @@ pub fn identifier() -> @parsec.Parser[Char, String] {
 }
 
 ///|
-fn decimal_value(chars : Array[Char]) -> Int {
+fn decimal_value(chars : Array[Char]) -> Int32 {
   let mut value = 0
   for char in chars {
     value = value * 10 + char.to_int() - '0'.to_int()
@@ -86,7 +86,7 @@ fn decimal_value(chars : Array[Char]) -> Int {
 }
 
 ///|
-pub fn integer() -> @parsec.Parser[Char, Int] {
+pub fn integer() -> @parsec.Parser[Char, Int32] {
   let sign = char('-')
     .replace(-1)
     .or_else(char('+').replace(1))

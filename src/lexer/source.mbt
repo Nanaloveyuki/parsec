@@ -1,22 +1,22 @@
 ///|
 pub struct Position {
-  priv offset : Int
-  priv line : Int
-  priv column : Int
+  priv offset : Int32
+  priv line : Int32
+  priv column : Int32
 }
 
 ///|
-pub fn Position::offset(self : Position) -> Int {
+pub fn Position::offset(self : Position) -> Int32 {
   self.offset
 }
 
 ///|
-pub fn Position::line(self : Position) -> Int {
+pub fn Position::line(self : Position) -> Int32 {
   self.line
 }
 
 ///|
-pub fn Position::column(self : Position) -> Int {
+pub fn Position::column(self : Position) -> Int32 {
   self.column
 }
 
@@ -37,7 +37,7 @@ pub fn Span::end(self : Span) -> Position {
 }
 
 ///|
-pub fn Span::length(self : Span) -> Int {
+pub fn Span::length(self : Span) -> Int32 {
   self.end.offset() - self.start.offset()
 }
 
@@ -73,8 +73,8 @@ pub fn[T, U] Located::map(
 ///|
 pub struct Source {
   priv text : String
-  priv length : Int
-  priv line_starts : Array[Int]
+  priv length : Int32
+  priv line_starts : Array[Int32]
 }
 
 ///|
@@ -96,17 +96,17 @@ pub fn Source::text(self : Source) -> String {
 }
 
 ///|
-pub fn Source::length(self : Source) -> Int {
+pub fn Source::length(self : Source) -> Int32 {
   self.length
 }
 
 ///|
-pub fn Source::line_count(self : Source) -> Int {
+pub fn Source::line_count(self : Source) -> Int32 {
   self.line_starts.length()
 }
 
 ///|
-pub fn Source::position_at(self : Source, offset : Int) -> Position? {
+pub fn Source::position_at(self : Source, offset : Int32) -> Position? {
   if offset < 0 || offset > self.length {
     None
   } else {
@@ -123,7 +123,7 @@ pub fn Source::position_at(self : Source, offset : Int) -> Position? {
 }
 
 ///|
-pub fn Source::span(self : Source, start : Int, end : Int) -> Span? {
+pub fn Source::span(self : Source, start : Int32, end : Int32) -> Span? {
   if end < start {
     None
   } else {

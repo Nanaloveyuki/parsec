@@ -12,7 +12,7 @@ fn depth_limit() -> @parsec.Parser[Char, RawJson] {
 ///|
 fn array_items(
   limits : JsonLimits,
-  depth : Int,
+  depth : Int32,
 ) -> @parsec.Parser[Char, Array[RawJson]] {
   let item = @parsec.Parser::delay(() => value(limits, depth + 1))
   if limits.max_array_items <= 0 {
@@ -41,7 +41,7 @@ fn array_items(
 }
 
 ///|
-fn array(limits : JsonLimits, depth : Int) -> @parsec.Parser[Char, RawJson] {
+fn array(limits : JsonLimits, depth : Int32) -> @parsec.Parser[Char, RawJson] {
   token('[', expected="opening bracket")
   .then_right(array_items(limits, depth))
   .then_left(token(']', expected="closing bracket"))
@@ -51,7 +51,7 @@ fn array(limits : JsonLimits, depth : Int) -> @parsec.Parser[Char, RawJson] {
 ///|
 fn property(
   limits : JsonLimits,
-  depth : Int,
+  depth : Int32,
 ) -> @parsec.Parser[Char, RawMember] {
   @parsec.Parser::position()
   .then(string(limits))
@@ -65,7 +65,7 @@ fn property(
 ///|
 fn object_members(
   limits : JsonLimits,
-  depth : Int,
+  depth : Int32,
 ) -> @parsec.Parser[Char, Array[RawMember]] {
   let current_property = property(limits, depth)
   if limits.max_object_members <= 0 {
@@ -96,7 +96,7 @@ fn object_members(
 }
 
 ///|
-fn object(limits : JsonLimits, depth : Int) -> @parsec.Parser[Char, RawJson] {
+fn object(limits : JsonLimits, depth : Int32) -> @parsec.Parser[Char, RawJson] {
   token('{', expected="opening brace")
   .then_right(object_members(limits, depth))
   .then_left(token('}', expected="closing brace"))
@@ -115,7 +115,7 @@ fn scalar(limits : JsonLimits) -> @parsec.Parser[Char, RawJson] {
 }
 
 ///|
-fn value(limits : JsonLimits, depth : Int) -> @parsec.Parser[Char, RawJson] {
+fn value(limits : JsonLimits, depth : Int32) -> @parsec.Parser[Char, RawJson] {
   let scalar = scalar(limits)
   if depth >= limits.max_depth {
     scalar.or_else(depth_limit())

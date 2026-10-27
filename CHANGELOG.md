@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Pin development and Unix/Windows CI to compiler `0.10.17+d971670cd`
+  with CLI `moon 0.1.20261023`; no public API or dependency changes.
+- Replace the deprecated reference constructor with `Ref(...)` and use its
+  prelude type without the obsolete direct `core/ref` import.
+
 ## 0.1.4 - 2026-09-25
 
 ### Fixed

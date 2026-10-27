@@ -4,7 +4,7 @@
 // end-of-input branches.
 
 ///|
-fn alphabetize(raw : Array[Int]) -> Array[Char] {
+fn alphabetize(raw : Array[Int32]) -> Array[Char] {
   raw.map(value => {
     match value & 3 {
       0 => 'a'
@@ -16,7 +16,7 @@ fn alphabetize(raw : Array[Int]) -> Array[Char] {
 }
 
 ///|
-fn leading_a(input : Array[Char]) -> Int {
+fn leading_a(input : Array[Char]) -> Int32 {
   for index = 0, count = 0; index < input.length() && input[index] == 'a'; {
     continue index + 1, count + 1
   } nobreak {
@@ -28,7 +28,7 @@ fn leading_a(input : Array[Char]) -> Int {
 fn run_success_matches(
   result : Result[(Array[Char], @parsec.State[Char]), @parsec.ParseError],
   expected : Array[Char],
-  expected_offset : Int,
+  expected_offset : Int32,
 ) -> Bool {
   match result {
     Ok((values, state)) =>
@@ -40,7 +40,7 @@ fn run_success_matches(
 ///|
 fn run_failure_matches(
   result : Result[(Array[Char], @parsec.State[Char]), @parsec.ParseError],
-  expected_offset : Int,
+  expected_offset : Int32,
 ) -> Bool {
   match result {
     Err(error) => error.offset() == expected_offset
@@ -51,7 +51,7 @@ fn run_failure_matches(
 ///|
 fn[A] parse_failure_matches(
   result : Result[A, @parsec.ParseError],
-  expected_offset : Int,
+  expected_offset : Int32,
 ) -> Bool {
   match result {
     Err(error) => error.offset() == expected_offset
@@ -63,7 +63,7 @@ fn[A] parse_failure_matches(
 fn sep_by_model(
   input : Array[Char],
   require_first : Bool,
-) -> (Bool, Array[Char], Int) {
+) -> (Bool, Array[Char], Int32) {
   let values : Array[Char] = []
   if input.length() == 0 || input[0] != 'a' {
     if require_first {
@@ -87,7 +87,7 @@ fn sep_by_model(
 ///|
 fn separated_run_matches(
   result : Result[(Array[Char], @parsec.State[Char]), @parsec.ParseError],
-  model : (Bool, Array[Char], Int),
+  model : (Bool, Array[Char], Int32),
 ) -> Bool {
   let (succeeds, values, offset) = model
   match (succeeds, result) {
@@ -100,7 +100,7 @@ fn separated_run_matches(
 ///|
 test "quickcheck: parse_all matches the single-token model" {
   @quickcheck.check(
-    (raw : Array[Int]) => {
+    (raw : Array[Int32]) => {
       let input = alphabetize(raw)
       let parser = @parsec.Parser::token('b', expected="b")
       match parser.parse_all(input) {
@@ -125,7 +125,7 @@ test "quickcheck: parse_all matches the single-token model" {
 ///|
 test "quickcheck: flat_map uses the parsed token and preserves its offset" {
   @quickcheck.check(
-    (raw : Array[Int]) => {
+    (raw : Array[Int32]) => {
       let input = alphabetize(raw)
       let parser = @parsec.Parser::item().flat_map(expected => {
         @parsec.Parser::token(expected, expected="repeated token")
@@ -149,7 +149,7 @@ test "quickcheck: flat_map uses the parsed token and preserves its offset" {
 ///|
 test "quickcheck: many agrees with the leading-token model" {
   @quickcheck.check(
-    (raw : Array[Int]) => {
+    (raw : Array[Int32]) => {
       let input = alphabetize(raw)
       let count = leading_a(input)
       let parser = @parsec.Parser::token('a', expected="a").many()
@@ -179,7 +179,7 @@ test "quickcheck: many agrees with the leading-token model" {
 ///|
 test "quickcheck: bounded repetition agrees with a bounded prefix model" {
   @quickcheck.check(
-    (input : (Array[Int], Int)) => {
+    (input : (Array[Int32], Int32)) => {
       let tokens = alphabetize(input.0)
       let limit = input.1 & 15
       let prefix = leading_a(tokens)
@@ -201,7 +201,7 @@ test "quickcheck: bounded repetition agrees with a bounded prefix model" {
 ///|
 test "quickcheck: exact repetition rejects the first missing token" {
   @quickcheck.check(
-    (input : (Array[Int], Int)) => {
+    (input : (Array[Int32], Int32)) => {
       let tokens = alphabetize(input.0)
       let requested = (input.1 & 7) - 2
       let prefix = leading_a(tokens)
@@ -230,7 +230,7 @@ test "quickcheck: exact repetition rejects the first missing token" {
 ///|
 test "quickcheck: separated repetition matches an independent scanner" {
   @quickcheck.check(
-    (raw : Array[Int]) => {
+    (raw : Array[Int32]) => {
       let input = raw.map(value => {
         match value & 3 {
           0 => 'a'
@@ -262,7 +262,7 @@ test "quickcheck: separated repetition matches an independent scanner" {
 ///|
 test "quickcheck: choice keeps the furthest retryable failure" {
   @quickcheck.check(
-    (raw : Array[Int]) => {
+    (raw : Array[Int32]) => {
       let input = alphabetize(raw)
       let pair = @parsec.Parser::token('a', expected="a").then_right(
         @parsec.Parser::token('b', expected="b"),
@@ -304,7 +304,7 @@ test "quickcheck: choice keeps the furthest retryable failure" {
 ///|
 test "quickcheck: lookahead and negative lookahead preserve the caller state" {
   @quickcheck.check(
-    (raw : Array[Int]) => {
+    (raw : Array[Int32]) => {
       let input = alphabetize(raw)
       let positive = @parsec.Parser::token('a', expected="a")
         .look_ahead()

@@ -7,15 +7,15 @@ package "Nanaloveyuki/parsec/lazy"
 
 // Types and methods
 pub(all) enum ParseError {
-  UnexpectedEnd(offset~ : Int)
-  Expected(label~ : String, offset~ : Int)
-  ExpectedAny(labels~ : Array[String], offset~ : Int)
-  EmptyMatchInMany(offset~ : Int)
-  EmptyChoice(offset~ : Int)
-  NotFollowedBy(label~ : String, offset~ : Int)
+  UnexpectedEnd(offset~ : Int32)
+  Expected(label~ : String, offset~ : Int32)
+  ExpectedAny(labels~ : Array[String], offset~ : Int32)
+  EmptyMatchInMany(offset~ : Int32)
+  EmptyChoice(offset~ : Int32)
+  NotFollowedBy(label~ : String, offset~ : Int32)
   Context(label~ : String, cause~ : ParseError)
 }
-pub fn ParseError::offset(Self) -> Int
+pub fn ParseError::offset(Self) -> Int32
 
 pub struct Parser[T, A] {
   // private fields
@@ -57,7 +57,7 @@ pub struct State[T] {
   // private fields
 }
 pub fn[T] State::new(Stream[T]) -> Self[T]
-pub fn[T] State::offset(Self[T]) -> Int
+pub fn[T] State::offset(Self[T]) -> Int32
 
 pub struct Stream[T] {
   // private fields

@@ -1,13 +1,13 @@
 ///|
 /// A mutable parser slot for recursive grammars assembled in multiple steps.
 pub struct ParserRef[T, A] {
-  priv target : @ref.Ref[Parser[T, A]?]
+  priv target : Ref[Parser[T, A]?]
 }
 
 ///|
 /// Creates an unbound recursive parser slot.
 pub fn[T, A] ParserRef::new() -> ParserRef[T, A] {
-  { target: @ref.new(None), }
+  { target: Ref(None), }
 }
 
 ///|

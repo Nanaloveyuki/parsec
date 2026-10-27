@@ -21,26 +21,26 @@ pub fn[T] Located::value(Self[T]) -> T
 pub struct Position {
   // private fields
 }
-pub fn Position::column(Self) -> Int
-pub fn Position::line(Self) -> Int
-pub fn Position::offset(Self) -> Int
+pub fn Position::column(Self) -> Int32
+pub fn Position::line(Self) -> Int32
+pub fn Position::offset(Self) -> Int32
 
 pub struct Source {
   // private fields
 }
 pub fn Source::error_position(Self, @parsec.ParseError) -> Position?
-pub fn Source::length(Self) -> Int
-pub fn Source::line_count(Self) -> Int
+pub fn Source::length(Self) -> Int32
+pub fn Source::line_count(Self) -> Int32
 pub fn Source::new(String) -> Self
-pub fn Source::position_at(Self, Int) -> Position?
-pub fn Source::span(Self, Int, Int) -> Span?
+pub fn Source::position_at(Self, Int32) -> Position?
+pub fn Source::span(Self, Int32, Int32) -> Span?
 pub fn Source::text(Self) -> String
 
 pub struct Span {
   // private fields
 }
 pub fn Span::end(Self) -> Position
-pub fn Span::length(Self) -> Int
+pub fn Span::length(Self) -> Int32
 pub fn Span::start(Self) -> Position
 
 // Type aliases

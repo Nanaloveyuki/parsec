@@ -57,7 +57,7 @@ fn[T, A] fail_at(label : String) -> @parsec.Parser[T, A] {
 }
 
 ///|
-fn hex_digit() -> @parsec.Parser[Char, Int] {
+fn hex_digit() -> @parsec.Parser[Char, Int32] {
   @parsec.Parser::satisfy("hexadecimal digit", char => {
     (char >= '0' && char <= '9') ||
     (char >= 'a' && char <= 'f') ||
@@ -74,7 +74,7 @@ fn hex_digit() -> @parsec.Parser[Char, Int] {
 }
 
 ///|
-fn code_unit() -> @parsec.Parser[Char, Int] {
+fn code_unit() -> @parsec.Parser[Char, Int32] {
   hex_digit()
   .count(4)
   .map(digits => digits[0] * 4096 + digits[1] * 256 + digits[2] * 16 + digits[3])

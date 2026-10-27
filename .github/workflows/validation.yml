@@ -30,11 +30,13 @@ jobs:
       - name: Install MoonBit
         shell: bash
         if: runner.os != 'Windows'
-        run: curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+        run: curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- "$(cat .moonbit-toolchain)"
       - name: Install MoonBit
         shell: pwsh
         if: runner.os == 'Windows'
-        run: Invoke-RestMethod https://cli.moonbitlang.com/install/powershell.ps1 | Invoke-Expression
+        run: |
+          $env:MOONBIT_INSTALL_VERSION = (Get-Content .moonbit-toolchain -Raw).Trim()
+          Invoke-RestMethod https://cli.moonbitlang.com/install/powershell.ps1 | Invoke-Expression
       - name: Add MoonBit to PATH
         shell: bash
         if: runner.os != 'Windows'

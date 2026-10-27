@@ -19,20 +19,20 @@ pub(all) enum JsonLimitKind {
 
 ///|
 pub struct JsonLimits {
-  priv max_input_chars : Int
-  priv max_depth : Int
-  priv max_string_chars : Int
-  priv max_array_items : Int
-  priv max_object_members : Int
+  priv max_input_chars : Int32
+  priv max_depth : Int32
+  priv max_string_chars : Int32
+  priv max_array_items : Int32
+  priv max_object_members : Int32
 }
 
 ///|
 pub fn JsonLimits::new(
-  max_input_chars~ : Int,
-  max_depth~ : Int,
-  max_string_chars~ : Int,
-  max_array_items~ : Int,
-  max_object_members~ : Int,
+  max_input_chars~ : Int32,
+  max_depth~ : Int32,
+  max_string_chars~ : Int32,
+  max_array_items~ : Int32,
+  max_object_members~ : Int32,
 ) -> JsonLimits {
   {
     max_input_chars,
@@ -57,12 +57,12 @@ pub fn JsonLimits::standard() -> JsonLimits {
 ///|
 pub(all) enum JsonError {
   Syntax(error~ : @parsec.ParseError)
-  DuplicateKey(key~ : String, first_offset~ : Int, duplicate_offset~ : Int)
-  Limit(kind~ : JsonLimitKind, offset~ : Int, limit~ : Int)
+  DuplicateKey(key~ : String, first_offset~ : Int32, duplicate_offset~ : Int32)
+  Limit(kind~ : JsonLimitKind, offset~ : Int32, limit~ : Int32)
 }
 
 ///|
-pub fn JsonError::offset(self : JsonError) -> Int {
+pub fn JsonError::offset(self : JsonError) -> Int32 {
   match self {
     Syntax(error~) => error.offset()
     DuplicateKey(duplicate_offset~, ..) => duplicate_offset
@@ -91,6 +91,6 @@ priv enum RawJson {
 ///|
 priv struct RawMember {
   key : String
-  key_offset : Int
+  key_offset : Int32
   value : RawJson
 }

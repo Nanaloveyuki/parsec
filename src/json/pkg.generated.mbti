@@ -25,10 +25,10 @@ pub(all) enum Json {
 
 pub(all) enum JsonError {
   Syntax(error~ : @parsec.ParseError)
-  DuplicateKey(key~ : String, first_offset~ : Int, duplicate_offset~ : Int)
-  Limit(kind~ : JsonLimitKind, offset~ : Int, limit~ : Int)
+  DuplicateKey(key~ : String, first_offset~ : Int32, duplicate_offset~ : Int32)
+  Limit(kind~ : JsonLimitKind, offset~ : Int32, limit~ : Int32)
 }
-pub fn JsonError::offset(Self) -> Int
+pub fn JsonError::offset(Self) -> Int32
 pub fn JsonError::position(Self, @lexer.Source) -> @lexer.Position?
 
 pub(all) enum JsonLimitKind {
@@ -42,7 +42,7 @@ pub(all) enum JsonLimitKind {
 pub struct JsonLimits {
   // private fields
 }
-pub fn JsonLimits::new(max_input_chars~ : Int, max_depth~ : Int, max_string_chars~ : Int, max_array_items~ : Int, max_object_members~ : Int) -> Self
+pub fn JsonLimits::new(max_input_chars~ : Int32, max_depth~ : Int32, max_string_chars~ : Int32, max_array_items~ : Int32, max_object_members~ : Int32) -> Self
 pub fn JsonLimits::standard() -> Self
 
 // Type aliases
