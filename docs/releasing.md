@@ -22,7 +22,7 @@ moon publish --dry-run
 4. Create and push an annotated tag, publish, then create the GitHub release:
 
 ```powershell
-$version = "0.1.0"
+$version = "0.1.5"
 git tag -a "v$version" -m "parsec $version"
 git push origin "v$version"
 moon publish

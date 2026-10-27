@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.5 - 2026-10-27
 
 - Pin development and Unix/Windows CI to compiler `0.10.17+d971670cd`
   with CLI `moon 0.1.20261023`; no public API or dependency changes.
