@@ -20,8 +20,8 @@ The key behavioral rules are part of the public contract:
 ## Local Setup
 
 Install the exact release recorded in `.moonbit-toolchain`: compiler
-`0.10.17+d971670cd` (2026-10-23), with CLI `moon 0.1.20261023`
-(`3778465`, 2026-10-23). Unix and Windows CI installers use this same pin.
+`0.10.19+97801ee1b` (2026-10-30), with CLI `moon 0.1.20261029`.
+Unix and Windows CI installers use this same pin.
 This project has no third-party dependencies or native build prerequisites.
 
 From the repository root, update the local registry and dependency cache:

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.6 - 2026-11-03
+
+- Update the development and CI compiler pin to `0.10.19+97801ee1b`
+  with CLI `moon 0.1.20261029`; preserve the public API and backend support.
+
 ## 0.1.5 - 2026-10-27
 
 - Pin development and Unix/Windows CI to compiler `0.10.17+d971670cd`
