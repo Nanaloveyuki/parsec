@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.7 - 2026-11-13
+
+- Pin development and CI to compiler `0.10.20+65efd5b93` with CLI
+  `moon 0.1.20261104`, preserving the public API and all four supported backends.
+- Replace obsolete dependency synchronization commands with `moon check`.
+
 ## 0.1.6 - 2026-11-03
 
 - Update the development and CI compiler pin to `0.10.19+97801ee1b`

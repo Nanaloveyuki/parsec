@@ -32,7 +32,7 @@ abstraction.
 ## Install
 
 ```sh
-moon add Nanaloveyuki/parsec@0.1.6
+moon add Nanaloveyuki/parsec@0.1.7
 ```
 
 Import the root package:

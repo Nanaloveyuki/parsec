@@ -9,7 +9,7 @@ tag, the Mooncake package, and the GitHub release must match.
 
 ```powershell
 moon update
-moon install
+moon check
 moon fmt --check
 moon check --target all
 moon test --target all
@@ -22,7 +22,7 @@ moon publish --dry-run
 4. Create and push an annotated tag, publish, then create the GitHub release:
 
 ```powershell
-$version = "0.1.6"
+$version = "0.1.7"
 git tag -a "v$version" -m "parsec $version"
 git push origin "v$version"
 moon publish

@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: |
           moon update
-          moon install
+          moon check
       - name: Check formatting and generated interfaces
         run: |
           moon fmt --check
