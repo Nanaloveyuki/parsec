@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0 - 2026-11-27
+
+- Pin MoonBit compiler archive `1.0.0-rc1+3c0520448` and CLI `0.1.20261126`.
+- Verify the parser suites on native, JavaScript, Wasm and Wasm GC.
+
 ## 0.1.7 - 2026-11-13
 
 - Pin development and CI to compiler `0.10.20+65efd5b93` with CLI
